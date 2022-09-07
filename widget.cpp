@@ -15,18 +15,22 @@ Widget::Widget(QWidget *parent)
     ui -> colorShowcase -> setPalette(*selectedColorPalette);
     color = Qt::white;
 
-    QGridLayout *g = new QGridLayout(this);
     colorSystem *test1 = new colorSystem(this, 3);
     colorSystem *test2 = new colorSystem(this, 4);
     colorSystem *test3 = new colorSystem(this, 3);
-    g -> addWidget(test1, 1, 0, 1, 3);
-    g -> addWidget(test2, 3, 0, 1, 3);
-    g -> addWidget(test3, 5, 0, 1, 3);
-    g -> addWidget(ui -> selectModel, 0, 0, 1, 1);
-    g -> addWidget(ui -> colorShowcase, 1, 4, 1, 1);
-    g -> addWidget(ui -> chooseColorButton, 2, 4, 1, 1);
 
-    //test->setGeometry(150, 150, 300, 300);
+    QHBoxLayout *h = new QHBoxLayout(this);
+    QVBoxLayout *vl = new QVBoxLayout, *vr = new QVBoxLayout;
+    vl -> addWidget(test1);
+    vl -> addWidget(test2);
+    vl -> addWidget(test3);
+    vr -> addWidget(ui -> selectModel);
+    vr -> addWidget(ui -> colorShowcase);
+    vr -> addWidget(ui -> chooseColorButton);
+    h -> addLayout(vl);
+    h -> addLayout(vr);
+    setWindowTitle("Color systems");
+    resize(minimumSize());
 }
 
 Widget::~Widget()
@@ -38,6 +42,10 @@ Widget::~Widget()
 void Widget::on_chooseColorButton_clicked()
 {
     QColor _color = QColorDialog::getColor(color);
-    selectedColorPalette -> setColor(QPalette::Window, _color);
-    ui -> colorShowcase -> setPalette(*selectedColorPalette);
+    if (_color.isValid())
+    {
+        selectedColorPalette -> setColor(QPalette::Window, _color);
+        ui -> colorShowcase -> setPalette(*selectedColorPalette);
+        color = _color;
+    }
 }
