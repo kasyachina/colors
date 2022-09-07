@@ -2,9 +2,9 @@
 
 #include <QWidget>
 #include <QLineEdit>
-#include <QGridLayout>
 #include <QLayout>
 #include <colorsystemfield.h>
+#include <QLabel>
 
 class colorSystem : public QWidget
 {
@@ -15,7 +15,8 @@ public:
 signals:
 
 private:
-    QLineEdit *numberBoxes[4];
+    colorSystemField *numberBoxes[4];
+    QLabel *nameLabel;
     int size;
     QSlider *controlSlider;
 };

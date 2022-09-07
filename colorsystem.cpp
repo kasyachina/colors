@@ -2,19 +2,23 @@
 
 colorSystem::colorSystem(QWidget *parent, int numberOfFields) : QWidget(parent), size(numberOfFields)
 {
-    //QGridLayout g(this);
     controlSlider = new QSlider(Qt::Horizontal, this);
-    QHBoxLayout h;
+    QHBoxLayout *h = new QHBoxLayout;
     for (int i = 0; i < size; i++)
     {
         numberBoxes[i] = new colorSystemField(this, controlSlider);
-        h.addWidget(numberBoxes[i]);
+        if (i > 0)
+        {
+            h -> addStretch(30);
+        }
+        h -> addWidget(numberBoxes[i]);
     }
-    QVBoxLayout v;
-    v.addLayout(&h);
-    v.addWidget(controlSlider);
-    this -> setLayout(&v);
-    //g.addWidget(controlSlider, 1, 0, 1, size);
+    QVBoxLayout *v = new QVBoxLayout(this);
+    nameLabel = new QLabel;
+    nameLabel -> setText("Sample color system:");
+    v -> addWidget(nameLabel);
+    v -> addLayout(h);
+    v -> addWidget(controlSlider);
 }
 colorSystem::~colorSystem()
 {
@@ -23,4 +27,5 @@ colorSystem::~colorSystem()
         delete numberBoxes[i];
     }
     delete controlSlider;
+    delete nameLabel;
 }
