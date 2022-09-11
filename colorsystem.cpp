@@ -1,12 +1,12 @@
 #include "colorsystem.h"
 
-colorSystem::colorSystem(QWidget *parent, int numberOfFields) : QWidget(parent), size(numberOfFields)
+colorSystem::colorSystem(QWidget *parent, int numberOfFields, std::vector<std::pair<qreal, qreal>> ranges) : QWidget(parent), size(numberOfFields)
 {
-    controlSlider = new QSlider(Qt::Horizontal, this);
+    controlSlider = new colorSystemSlider(this);
     QHBoxLayout *h = new QHBoxLayout;
     for (int i = 0; i < size; i++)
     {
-        numberBoxes[i] = new colorSystemField(this, controlSlider);
+        numberBoxes[i] = new colorSystemField(this, controlSlider, ranges[i].first, ranges[i].second);
         if (i > 0)
         {
             h -> addStretch(30);
