@@ -1,13 +1,14 @@
 #include "colorsystem.h"
 #include <QDebug>
 
-colorSystem::colorSystem(QWidget *parent, int numberOfFields, std::vector<std::pair<qreal, qreal>> ranges) : QWidget(parent), size(numberOfFields)
+colorSystem::colorSystem(QWidget *parent, int numberOfFields, std::vector<std::pair<qreal, qreal>> ranges, QString name) : QWidget(parent), size(numberOfFields)
 {
     controlSlider = new colorSystemSlider(this);
     QHBoxLayout *h = new QHBoxLayout;
     for (int i = 0; i < size; i++)
     {
         fields[i] = new colorSystemField(this, controlSlider, ranges[i].first, ranges[i].second, i);
+        values[i] = ranges[i].first;
         connect(fields[i], &colorSystemField::valueChanged, this, &colorSystem::ChangeFieldValue);
         if (i > 0)
         {
@@ -17,7 +18,7 @@ colorSystem::colorSystem(QWidget *parent, int numberOfFields, std::vector<std::p
     }
     QVBoxLayout *v = new QVBoxLayout(this);
     nameLabel = new QLabel;
-    nameLabel -> setText("Sample color system:");
+    nameLabel -> setText(name);
     v -> addWidget(nameLabel);
     v -> addLayout(h);
     v -> addWidget(controlSlider);
@@ -34,9 +35,9 @@ void colorSystem::ChangeFieldValue(int newValue, int id)
     for (int i = 0; i < size; i++)
     {
         newValues.push_back(values[i]);
-        qDebug() << '[' << values[i];
+        //qDebug() << '[' << values[i];
     }
-    qDebug() << ']';
+    //qDebug() << ']';
     emit systemValueChanged(newValues);
 }
 colorSystem::~colorSystem()
@@ -47,4 +48,16 @@ colorSystem::~colorSystem()
     }
     delete controlSlider;
     delete nameLabel;
+}
+RGBSystem::RGBSystem(QWidget *parent):colorSystem(parent, 3, {{0, 255}, {0, 255}, {0, 255}}, "RGB")
+{}
+ColorSystem RGBSystem::getSystemId() const
+{
+    return ColorSystem::RGB;
+}
+CMYKSystem::CMYKSystem(QWidget *parent):colorSystem(parent, 4, {{0, 255}, {0, 255}, {0, 255}, {0, 255}}, "CMYK")
+{}
+ColorSystem CMYKSystem::getSystemId() const
+{
+    return ColorSystem::CMYK;
 }

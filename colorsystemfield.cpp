@@ -1,7 +1,7 @@
 #include "colorsystemfield.h"
 
 colorSystemField::colorSystemField(QWidget *parent, colorSystemSlider *control_slider, int _left, int _right, int _id) :
-    QLineEdit(parent), leftThreshold(_left), rightThreshold(_right), id(_id), slider(control_slider)
+    QLineEdit(parent), id(_id), leftThreshold(_left), rightThreshold(_right), slider(control_slider)
 {
     slider -> setVisible(false);
     connect(this, &QLineEdit::returnPressed, this, &colorSystemField::EnterPressed);

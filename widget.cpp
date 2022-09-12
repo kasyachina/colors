@@ -15,9 +15,9 @@ Widget::Widget(QWidget *parent)
     ui -> colorShowcase -> setPalette(*selectedColorPalette);
     color = Qt::white;
 
-    colorSystem *test1 = new colorSystem(this, 3, {{0, 255}, {0, 255}, {0, 255}});
-    colorSystem *test2 = new colorSystem(this, 4, {{0, 255}, {0, 255}, {0, 255}, {0, 255}});
-    colorSystem *test3 = new colorSystem(this, 3, {{0, 255}, {0, 255}, {0, 255}});
+    colorSystem *test1 = new RGBSystem(this);
+    colorSystem *test2 = new CMYKSystem(this);
+    colorSystem *test3 = new RGBSystem(this);
 
     QHBoxLayout *h = new QHBoxLayout(this);
     QVBoxLayout *vl = new QVBoxLayout, *vr = new QVBoxLayout;
