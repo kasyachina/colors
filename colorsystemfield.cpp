@@ -1,43 +1,61 @@
 #include "colorsystemfield.h"
-#include <qDebug>
 
 colorSystemField::colorSystemField(QWidget *parent, colorSystemSlider *control_slider, int _left, int _right) :
     QLineEdit(parent), leftThreshold(_left), rightThreshold(_right), slider(control_slider)
 {
     slider -> setVisible(false);
     connect(this, &QLineEdit::returnPressed, this, &colorSystemField::EnterPressed);
+    connect(this, &QLineEdit::textChanged, this, &colorSystemField::ChangeValueText);
+    QString warningMessage = "This field must be integer in range [" + QString::number(leftThreshold) + "," + QString::number(rightThreshold) + "]";
+    connect(this, &QLineEdit::inputRejected, this, [this, warningMessage](){QMessageBox::warning(this, "Error", warningMessage);});
+    QIntValidator *val = new QIntValidator(leftThreshold, rightThreshold, this);
+    setValidator(val);
     ChangeValue(_left);
 }
 void colorSystemField::EnterPressed()
 {
     slider -> setVisible(false);
-    slider -> ClearActiveField();
     clearFocus();
 }
 void colorSystemField::ChangeValue(int newValue)
 {
     value = newValue;
-    setText(QString::number(value));
+    if (text() != QString::number(value))
+    {
+        setText(QString::number(value));
+    }
+    if (slider -> GetActiveField() == this && slider -> value() != value)
+    {
+        slider -> setValue(value);
+    }
     emit valueChanged(newValue);
+}
+void colorSystemField::ChangeValueText(const QString& newValue)
+{
+    ChangeValue(newValue.toInt());
 }
 void colorSystemField::mousePressEvent(QMouseEvent *)
 {
     if (slider -> GetActiveField())
     {
+        disconnect(slider, &QSlider::sliderReleased, this, &colorSystemField::setActive);
         disconnect(slider, &QSlider::valueChanged, slider -> GetActiveField(), &colorSystemField::ChangeValue);
-        disconnect(this, &QLineEdit::textChanged, slider, &colorSystemSlider::ActiveFieldValueChanged);
+
     }
     slider -> ChangeActiveField(this);
     slider -> setVisible(true);
     slider -> setRange(leftThreshold, rightThreshold);
     slider -> ActiveFieldValueChanged();
-    connect(this, &QLineEdit::textChanged, slider, &colorSystemSlider::ActiveFieldValueChanged);
-    connect(slider, &QSlider::sliderReleased, this, [this](){ this -> setFocus(); });
+    connect(slider, &QSlider::sliderReleased, this, &colorSystemField::setActive);
     connect(slider, &QSlider::valueChanged, this, &colorSystemField::ChangeValue);
 }
 colorSystemSlider::colorSystemSlider(QWidget *parent) : QSlider(Qt::Horizontal, parent)
 {
     setTracking(true);
+}
+void colorSystemField::setActive()
+{
+    setFocus();
 }
 void colorSystemSlider::ClearActiveField()
 {

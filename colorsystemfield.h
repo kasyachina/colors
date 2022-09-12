@@ -3,6 +3,8 @@
 #include <QWidget>
 #include <QSlider>
 #include <QLineEdit>
+#include <QValidator>
+#include <QMessageBox>
 
 class colorSystemField;
 
@@ -30,10 +32,12 @@ public:
 public slots:
     void EnterPressed();
     void ChangeValue(int newValue);
+    void ChangeValueText(const QString& newValue);
 signals:
     void valueChanged(int newValue);
 private:
     int leftThreshold, rightThreshold;
+    void setActive();
     int value;
     colorSystemSlider *slider;
     void mousePressEvent(QMouseEvent *) override;
