@@ -1,7 +1,7 @@
 #include "colorsystemfield.h"
 
-colorSystemField::colorSystemField(QWidget *parent, colorSystemSlider *control_slider, int _left, int _right) :
-    QLineEdit(parent), leftThreshold(_left), rightThreshold(_right), slider(control_slider)
+colorSystemField::colorSystemField(QWidget *parent, colorSystemSlider *control_slider, int _left, int _right, int _id) :
+    QLineEdit(parent), leftThreshold(_left), rightThreshold(_right), id(_id), slider(control_slider)
 {
     slider -> setVisible(false);
     connect(this, &QLineEdit::returnPressed, this, &colorSystemField::EnterPressed);
@@ -17,6 +17,10 @@ void colorSystemField::EnterPressed()
     slider -> setVisible(false);
     clearFocus();
 }
+int colorSystemField::getValue() const
+{
+    return value;
+}
 void colorSystemField::ChangeValue(int newValue)
 {
     value = newValue;
@@ -28,7 +32,7 @@ void colorSystemField::ChangeValue(int newValue)
     {
         slider -> setValue(value);
     }
-    emit valueChanged(newValue);
+    emit valueChanged(newValue, id);
 }
 void colorSystemField::ChangeValueText(const QString& newValue)
 {
