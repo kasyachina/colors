@@ -61,3 +61,27 @@ ColorSystem CMYKSystem::getSystemId() const
 {
     return ColorSystem::CMYK;
 }
+HSVSystem::HSVSystem(QWidget *parent):colorSystem(parent, 3, {{0, 360}, {0, 100}, {0, 100}}, "HSV")
+{}
+ColorSystem HSVSystem::getSystemId() const
+{
+    return ColorSystem::HSV;
+}
+HLSSystem::HLSSystem(QWidget *parent):colorSystem(parent, 3, {{0, 360}, {0, 100}, {0, 100}}, "HLS")
+{}
+ColorSystem HLSSystem::getSystemId() const
+{
+    return ColorSystem::HLS;
+}
+XYZSystem::XYZSystem(QWidget *parent):colorSystem(parent, 3, {{0, 95}, {0, 100}, {0, 109}}, "XYZ")
+{}
+ColorSystem XYZSystem::getSystemId() const
+{
+    return ColorSystem::XYZ;
+}
+LABSystem::LABSystem(QWidget *parent):colorSystem(parent, 3, {{0, 100}, {-128, 127}, {-128, 127}}, "LAB")
+{}
+ColorSystem LABSystem::getSystemId() const
+{
+    return ColorSystem::LAB;
+}

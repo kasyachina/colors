@@ -11,7 +11,11 @@
 enum class ColorSystem
 {
     RGB,
-    CMYK
+    CMYK,
+    HSV,
+    HLS,
+    XYZ,
+    LAB
 };
 
 class colorSystem : public QWidget
@@ -45,6 +49,30 @@ class CMYKSystem : public colorSystem
 {
 public:
     explicit CMYKSystem(QWidget *parent);
+    ColorSystem getSystemId() const override;
+};
+class HSVSystem : public colorSystem
+{
+public:
+    explicit HSVSystem(QWidget *parent);
+    ColorSystem getSystemId() const override;
+};
+class HLSSystem : public colorSystem
+{
+public:
+    explicit HLSSystem(QWidget *parent);
+    ColorSystem getSystemId() const override;
+};
+class XYZSystem : public colorSystem
+{
+public:
+    explicit XYZSystem(QWidget *parent);
+    ColorSystem getSystemId() const override;
+};
+class LABSystem : public colorSystem
+{
+public:
+    explicit LABSystem(QWidget *parent);
     ColorSystem getSystemId() const override;
 };
 

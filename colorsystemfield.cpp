@@ -1,4 +1,5 @@
 #include "colorsystemfield.h"
+#include "QDebug"
 
 colorSystemField::colorSystemField(QWidget *parent, colorSystemSlider *control_slider, int _left, int _right, int _id) :
     QLineEdit(parent), id(_id), leftThreshold(_left), rightThreshold(_right), slider(control_slider)
@@ -23,6 +24,14 @@ int colorSystemField::getValue() const
 }
 void colorSystemField::ChangeValue(int newValue)
 {
+    if (newValue > rightThreshold)
+    {
+        newValue = rightThreshold;
+    }
+    if (newValue < leftThreshold)
+    {
+        newValue = leftThreshold;
+    }
     value = newValue;
     if (text() != QString::number(value))
     {
@@ -36,7 +45,12 @@ void colorSystemField::ChangeValue(int newValue)
 }
 void colorSystemField::ChangeValueText(const QString& newValue)
 {
-    ChangeValue(newValue.toInt());
+    bool ok;
+    int parsedInt = newValue.toInt(&ok);
+    if (ok)
+    {
+        ChangeValue(parsedInt);
+    }
 }
 void colorSystemField::mousePressEvent(QMouseEvent *)
 {
@@ -49,7 +63,7 @@ void colorSystemField::mousePressEvent(QMouseEvent *)
     slider -> ChangeActiveField(this);
     slider -> setVisible(true);
     slider -> setRange(leftThreshold, rightThreshold);
-    slider -> ActiveFieldValueChanged();
+    ChangeValue(value);
     connect(slider, &QSlider::sliderReleased, this, &colorSystemField::setActive);
     connect(slider, &QSlider::valueChanged, this, &colorSystemField::ChangeValue);
 }
@@ -72,8 +86,4 @@ colorSystemField* colorSystemSlider::GetActiveField() const
 void colorSystemSlider::ChangeActiveField(colorSystemField *new_field)
 {
     activeField = new_field;
-}
-void colorSystemSlider::ActiveFieldValueChanged()
-{
-    setValue(activeField->text().toInt());
 }

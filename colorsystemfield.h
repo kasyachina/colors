@@ -17,8 +17,6 @@ public:
     void ClearActiveField();
     colorSystemField* GetActiveField() const;
     virtual ~colorSystemSlider(){}
-public slots:
-    void ActiveFieldValueChanged();
 private:
     colorSystemField *activeField = nullptr;
 };
