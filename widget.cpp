@@ -15,19 +15,14 @@ Widget::Widget(QWidget *parent)
     ui -> colorShowcase -> setPalette(*selectedColorPalette);
     color = Qt::white;
 
-    colorSystem *test1 = new HSVSystem(this);
-    colorSystem *test2 = new LABSystem(this);
-    colorSystem *test3 = new HLSSystem(this);
-
     QHBoxLayout *h = new QHBoxLayout(this);
-    QVBoxLayout *vl = new QVBoxLayout, *vr = new QVBoxLayout;
-    vl -> addWidget(test1);
-    vl -> addWidget(test2);
-    vl -> addWidget(test3);
+    QVBoxLayout *vr = new QVBoxLayout;
+
+    colorSystemController *controller = new colorSystemController(this, {ColorSystem::RGB, ColorSystem::HSV, ColorSystem::XYZ});
     vr -> addWidget(ui -> selectModel);
     vr -> addWidget(ui -> colorShowcase);
     vr -> addWidget(ui -> chooseColorButton);
-    h -> addLayout(vl);
+    h -> addWidget(controller);
     h -> addLayout(vr);
     setWindowTitle("Color systems");
     resize(minimumSize());

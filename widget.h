@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QWidget>
-#include <colorsystem.h>
+#include "colorsystemcontroller.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }

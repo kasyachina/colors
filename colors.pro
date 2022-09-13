@@ -17,12 +17,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     colorsystem.cpp \
+    colorsystemcontroller.cpp \
     colorsystemfield.cpp \
     main.cpp \
     widget.cpp
 
 HEADERS += \
     colorsystem.h \
+    colorsystemcontroller.h \
     colorsystemfield.h \
     widget.h
 
