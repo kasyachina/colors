@@ -16,8 +16,8 @@
   <widget class="QComboBox" name="selectModel">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>30</y>
+     <x>510</x>
+     <y>80</y>
      <width>221</width>
      <height>41</height>
     </rect>

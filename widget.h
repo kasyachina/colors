@@ -18,8 +18,12 @@ public:
 private slots:
     void on_chooseColorButton_clicked();
 
+    void on_selectModel_currentTextChanged(const QString &arg1);
+
 private:
     Ui::Widget *ui;
     QPalette *selectedColorPalette;
+    colorSystemController *controller;
     QColor color;
+    QSize normalSize;
 };

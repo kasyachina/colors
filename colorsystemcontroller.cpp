@@ -21,22 +21,22 @@ void colorSystemController::ChangeSystems(const std::vector<ColorSystem>& data)
         switch (data[i])
         {
             case ColorSystem::RGB:
-                systems[i] = new RGBSystem(this);
+                systems[i] = new RGBSystem(this, i);
             break;
             case ColorSystem::CMYK:
-                systems[i] = new CMYKSystem(this);
+                systems[i] = new CMYKSystem(this, i);
             break;
             case ColorSystem::HSV:
-                systems[i] = new HSVSystem(this);
+                systems[i] = new HSVSystem(this, i);
             break;
             case ColorSystem::HLS:
-                systems[i] = new HLSSystem(this);
+                systems[i] = new HLSSystem(this, i);
             break;
             case ColorSystem::XYZ:
-                systems[i] = new XYZSystem(this);
+                systems[i] = new XYZSystem(this, i);
             break;
             case ColorSystem::LAB:
-                systems[i] = new LABSystem(this);
+                systems[i] = new LABSystem(this, i);
         }
         vLayout->addWidget(systems[i]);
     }

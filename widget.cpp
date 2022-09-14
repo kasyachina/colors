@@ -2,6 +2,7 @@
 #include "ui_widget.h"
 #include <QPalette>
 #include <QColorDialog>
+#include <QDebug>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -18,20 +19,23 @@ Widget::Widget(QWidget *parent)
     QHBoxLayout *h = new QHBoxLayout(this);
     QVBoxLayout *vr = new QVBoxLayout;
 
-    colorSystemController *controller = new colorSystemController(this, {ColorSystem::RGB, ColorSystem::HSV, ColorSystem::XYZ});
+    controller = new colorSystemController(this, {ColorSystem::RGB, ColorSystem::LAB, ColorSystem::CMYK});
+    normalSize = QSize(570, 270);
+    ui -> selectModel -> setCurrentIndex(0);
     vr -> addWidget(ui -> selectModel);
     vr -> addWidget(ui -> colorShowcase);
     vr -> addWidget(ui -> chooseColorButton);
     h -> addWidget(controller);
     h -> addLayout(vr);
     setWindowTitle("Color systems");
-    resize(minimumSize());
+    resize(normalSize);
 }
 
 Widget::~Widget()
 {
     delete ui;
     delete selectedColorPalette;
+    delete controller;
 }
 
 void Widget::on_chooseColorButton_clicked()
@@ -43,4 +47,39 @@ void Widget::on_chooseColorButton_clicked()
         ui -> colorShowcase -> setPalette(*selectedColorPalette);
         color = _color;
     }
+}
+
+void Widget::on_selectModel_currentTextChanged(const QString &arg1)
+{
+    auto parts = arg1.split(" <-> ");
+    std::vector<ColorSystem> v;
+    for (const auto& x : parts)
+    {
+        if (x == "RGB")
+        {
+            v.push_back(ColorSystem::RGB);
+        }
+        if (x == "CMYK")
+        {
+            v.push_back(ColorSystem::CMYK);
+        }
+        if (x == "HLS")
+        {
+            v.push_back(ColorSystem::HLS);
+        }
+        if (x == "HSV")
+        {
+            v.push_back(ColorSystem::HSV);
+        }
+        if (x == "LAB")
+        {
+            v.push_back(ColorSystem::LAB);
+        }
+        if (x == "XYZ")
+        {
+            v.push_back(ColorSystem::XYZ);
+        }
+    }
+    controller->ChangeSystems(v);
+    resize(normalSize);
 }

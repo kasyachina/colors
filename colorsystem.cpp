@@ -1,7 +1,8 @@
 #include "colorsystem.h"
 #include <QDebug>
 
-colorSystem::colorSystem(QWidget *parent, int numberOfFields, std::vector<std::pair<qreal, qreal>> ranges, QString name) : QWidget(parent), size(numberOfFields)
+colorSystem::colorSystem(QWidget *parent, int numberOfFields, std::vector<std::pair<qreal, qreal>> ranges, QString name, int _id) :
+    QWidget(parent), size(numberOfFields), id(_id)
 {
     controlSlider = new colorSystemSlider(this);
     QHBoxLayout *h = new QHBoxLayout;
@@ -38,7 +39,7 @@ void colorSystem::ChangeFieldValue(int newValue, int id)
         //qDebug() << '[' << values[i];
     }
     //qDebug() << ']';
-    emit systemValueChanged(newValues);
+    emit systemValueChanged(newValues, id);
 }
 colorSystem::~colorSystem()
 {
@@ -49,37 +50,37 @@ colorSystem::~colorSystem()
     delete controlSlider;
     delete nameLabel;
 }
-RGBSystem::RGBSystem(QWidget *parent):colorSystem(parent, 3, {{0, 255}, {0, 255}, {0, 255}}, "RGB")
+RGBSystem::RGBSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 255}, {0, 255}, {0, 255}}, "RGB")
 {}
 ColorSystem RGBSystem::getSystemId() const
 {
     return ColorSystem::RGB;
 }
-CMYKSystem::CMYKSystem(QWidget *parent):colorSystem(parent, 4, {{0, 255}, {0, 255}, {0, 255}, {0, 255}}, "CMYK")
+CMYKSystem::CMYKSystem(QWidget *parent, int id):colorSystem(parent, 4, {{0, 255}, {0, 255}, {0, 255}, {0, 255}}, "CMYK", id)
 {}
 ColorSystem CMYKSystem::getSystemId() const
 {
     return ColorSystem::CMYK;
 }
-HSVSystem::HSVSystem(QWidget *parent):colorSystem(parent, 3, {{0, 360}, {0, 100}, {0, 100}}, "HSV")
+HSVSystem::HSVSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 360}, {0, 100}, {0, 100}}, "HSV", id)
 {}
 ColorSystem HSVSystem::getSystemId() const
 {
     return ColorSystem::HSV;
 }
-HLSSystem::HLSSystem(QWidget *parent):colorSystem(parent, 3, {{0, 360}, {0, 100}, {0, 100}}, "HLS")
+HLSSystem::HLSSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 360}, {0, 100}, {0, 100}}, "HLS", id)
 {}
 ColorSystem HLSSystem::getSystemId() const
 {
     return ColorSystem::HLS;
 }
-XYZSystem::XYZSystem(QWidget *parent):colorSystem(parent, 3, {{0, 95}, {0, 100}, {0, 109}}, "XYZ")
+XYZSystem::XYZSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 95}, {0, 100}, {0, 109}}, "XYZ", id)
 {}
 ColorSystem XYZSystem::getSystemId() const
 {
     return ColorSystem::XYZ;
 }
-LABSystem::LABSystem(QWidget *parent):colorSystem(parent, 3, {{0, 100}, {-128, 127}, {-128, 127}}, "LAB")
+LABSystem::LABSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 100}, {-128, 127}, {-128, 127}}, "LAB", id)
 {}
 ColorSystem LABSystem::getSystemId() const
 {
