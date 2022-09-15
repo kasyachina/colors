@@ -2,8 +2,9 @@
 #include "QDebug"
 
 colorSystemField::colorSystemField(QWidget *parent, colorSystemSlider *control_slider, int _left, int _right, int _id) :
-    QLineEdit(parent), id(_id), leftThreshold(_left), rightThreshold(_right), slider(control_slider)
+    QLineEdit(parent), fieldId(_id), leftThreshold(_left), rightThreshold(_right), slider(control_slider)
 {
+    blockSignals(true);
     slider -> setVisible(false);
     connect(this, &QLineEdit::returnPressed, this, &colorSystemField::EnterPressed);
     connect(this, &QLineEdit::textChanged, this, &colorSystemField::ChangeValueText);
@@ -12,6 +13,7 @@ colorSystemField::colorSystemField(QWidget *parent, colorSystemSlider *control_s
     QIntValidator *val = new QIntValidator(leftThreshold, rightThreshold, this);
     setValidator(val);
     ChangeValue(_left);
+    blockSignals(false);
 }
 void colorSystemField::EnterPressed()
 {
@@ -41,7 +43,7 @@ void colorSystemField::ChangeValue(int newValue)
     {
         slider -> setValue(value);
     }
-    emit valueChanged(newValue, id);
+    emit valueChanged(newValue, fieldId);
 }
 void colorSystemField::ChangeValueText(const QString& newValue)
 {
@@ -58,7 +60,6 @@ void colorSystemField::mousePressEvent(QMouseEvent *)
     {
         disconnect(slider, &QSlider::sliderReleased, this, &colorSystemField::setActive);
         disconnect(slider, &QSlider::valueChanged, slider -> GetActiveField(), &colorSystemField::ChangeValue);
-
     }
     slider -> ChangeActiveField(this);
     slider -> setVisible(true);

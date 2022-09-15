@@ -35,7 +35,8 @@ public slots:
 signals:
     void valueChanged(int newValue, int fieldId);
 private:
-    int id;
+    bool IsSignalAllowed;
+    int fieldId;
     int leftThreshold, rightThreshold;
     void setActive();
     int value;

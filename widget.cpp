@@ -11,15 +11,11 @@ Widget::Widget(QWidget *parent)
     ui->setupUi(this);
 
     ui -> colorShowcase -> setAutoFillBackground(true);
-    selectedColorPalette = new QPalette;
-    selectedColorPalette -> setColor(QPalette::Window, Qt::white);
-    ui -> colorShowcase -> setPalette(*selectedColorPalette);
-    color = Qt::white;
 
     QHBoxLayout *h = new QHBoxLayout(this);
     QVBoxLayout *vr = new QVBoxLayout;
 
-    controller = new colorSystemController(this, {ColorSystem::RGB, ColorSystem::LAB, ColorSystem::CMYK});
+    controller = new colorSystemController(this, {ColorSystem::RGB, ColorSystem::LAB, ColorSystem::CMYK}, ui -> colorShowcase);
     normalSize = QSize(570, 270);
     ui -> selectModel -> setCurrentIndex(0);
     vr -> addWidget(ui -> selectModel);
@@ -34,18 +30,15 @@ Widget::Widget(QWidget *parent)
 Widget::~Widget()
 {
     delete ui;
-    delete selectedColorPalette;
     delete controller;
 }
 
 void Widget::on_chooseColorButton_clicked()
 {
-    QColor _color = QColorDialog::getColor(color);
-    if (_color.isValid())
+    QColor color = QColorDialog::getColor(controller -> getMainColor());
+    if (color.isValid())
     {
-        selectedColorPalette -> setColor(QPalette::Window, _color);
-        ui -> colorShowcase -> setPalette(*selectedColorPalette);
-        color = _color;
+        controller -> setMainColor(color);
     }
 }
 

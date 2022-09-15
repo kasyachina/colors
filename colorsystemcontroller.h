@@ -6,13 +6,18 @@ class colorSystemController : public QWidget
 {
     Q_OBJECT
 public:
-    colorSystemController(QWidget *parent, const std::vector<ColorSystem>& data);
+    colorSystemController(QWidget *parent, const std::vector<ColorSystem>& data, QWidget *displayWidget);
+    QColor getMainColor() const;
+    void setMainColor(const QColor& newColor);
     void ChangeSystems(const std::vector<ColorSystem>& data);
     ~colorSystemController();
-signals:
-
+public slots:
+    void OnChangeSystemValues(const std::vector<int>& newValues, int systemId);
 private:
+    QColor mainColor;
+    QWidget *colorDisplayWidget;
     QVBoxLayout *vLayout = nullptr;
     colorSystem *systems[3];
+    QPalette *selectedColorPalette;
 };
 

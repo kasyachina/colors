@@ -22,8 +22,6 @@ private slots:
 
 private:
     Ui::Widget *ui;
-    QPalette *selectedColorPalette;
     colorSystemController *controller;
-    QColor color;
     QSize normalSize;
 };
