@@ -67,6 +67,7 @@ void colorSystemField::mousePressEvent(QMouseEvent *)
     ChangeValue(value);
     connect(slider, &QSlider::sliderReleased, this, &colorSystemField::setActive);
     connect(slider, &QSlider::valueChanged, this, &colorSystemField::ChangeValue);
+    emit sliderActivated();
 }
 colorSystemSlider::colorSystemSlider(QWidget *parent) : QSlider(Qt::Horizontal, parent)
 {

@@ -5,13 +5,14 @@ colorSystem::colorSystem(QWidget *parent, int numberOfFields, std::vector<std::p
     QWidget(parent), size(numberOfFields), systemId(_id)
 {
     blockSignals(true);
-    controlSlider = new colorSystemSlider(this);
+    slider = new colorSystemSlider(this);
     QHBoxLayout *h = new QHBoxLayout;
     for (int i = 0; i < size; i++)
     {
-        fields[i] = new colorSystemField(this, controlSlider, ranges[i].first, ranges[i].second, i);
+        fields[i] = new colorSystemField(this, slider, ranges[i].first, ranges[i].second, i);
         values[i] = ranges[i].first;
         connect(fields[i], &colorSystemField::valueChanged, this, &colorSystem::ChangeFieldValue);
+        connect(fields[i], &colorSystemField::sliderActivated, this, &colorSystem::SliderActivated);
         if (i > 0)
         {
             h -> addStretch(30);
@@ -23,8 +24,21 @@ colorSystem::colorSystem(QWidget *parent, int numberOfFields, std::vector<std::p
     nameLabel -> setText(name);
     v -> addWidget(nameLabel);
     v -> addLayout(h);
-    v -> addWidget(controlSlider);
+    v -> addWidget(slider);
     blockSignals(false);
+}
+void colorSystem::SliderActivated()
+{
+    emit systemSliderActivated(systemId);
+}
+void colorSystem::DisableSlider()
+{
+    if (slider -> isVisible() && slider -> GetActiveField())
+    {
+        disconnect(slider, &QSlider::sliderReleased, slider -> GetActiveField(), &colorSystemField::setActive);
+        disconnect(slider, &QSlider::valueChanged, slider -> GetActiveField(), &colorSystemField::ChangeValue);
+        slider -> setVisible(false);
+    }
 }
 void colorSystem::BlockAllSignals(bool block)
 {
@@ -56,7 +70,7 @@ colorSystem::~colorSystem()
     {
         delete fields[i];
     }
-    delete controlSlider;
+    delete slider;
     delete nameLabel;
 }
 RGBSystem::RGBSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 255}, {0, 255}, {0, 255}}, "RGB", id)

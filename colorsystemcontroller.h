@@ -13,7 +13,10 @@ public:
     ~colorSystemController();
 public slots:
     void OnChangeSystemValues(const std::vector<int>& newValues, int systemId);
+    void OnSystemSliderActivated(int systemId);
 private:
+    std::vector<int> fromXYZtoRGB(const std::vector<qreal>& xyzValues);
+    std::vector<qreal> fromLABtoXYZ(const std::vector<int>& labValues);
     QColor mainColor;
     QWidget *colorDisplayWidget;
     QVBoxLayout *vLayout = nullptr;

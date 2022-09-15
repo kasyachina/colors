@@ -25,6 +25,7 @@ void colorSystemController::ChangeSystems(const std::vector<ColorSystem>& data)
         {
             delete systems[i];
             disconnect(systems[i], &colorSystem::systemValueChanged, this, &colorSystemController::OnChangeSystemValues);
+            disconnect(systems[i], &colorSystem::systemSliderActivated, this, &colorSystemController::OnSystemSliderActivated);
         }
         switch (data[i])
         {
@@ -48,11 +49,22 @@ void colorSystemController::ChangeSystems(const std::vector<ColorSystem>& data)
         }
         vLayout->addWidget(systems[i]);
         connect(systems[i], &colorSystem::systemValueChanged, this, &colorSystemController::OnChangeSystemValues);
+        connect(systems[i], &colorSystem::systemSliderActivated, this, &colorSystemController::OnSystemSliderActivated);
     }
 }
 QColor colorSystemController::getMainColor() const
 {
     return mainColor;
+}
+void colorSystemController::OnSystemSliderActivated(int systemId)
+{
+    for(int i = 0; i < 3; i++)
+    {
+        if (i != systemId)
+        {
+            systems[i] -> DisableSlider();
+        }
+    }
 }
 void colorSystemController::OnChangeSystemValues(const std::vector<int>& newValues, int systemId)
 {
