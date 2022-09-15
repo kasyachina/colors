@@ -1,5 +1,6 @@
 #include "colorsystemcontroller.h"
 #include <QDebug>
+#include <QtMath>
 
 colorSystemController::colorSystemController(QWidget *parent, const std::vector<ColorSystem>& data, QWidget *displayWidget):
     QWidget(parent), colorDisplayWidget(displayWidget)
@@ -65,6 +66,27 @@ void colorSystemController::OnSystemSliderActivated(int systemId)
             systems[i] -> DisableSlider();
         }
     }
+}
+std::vector<qreal> colorSystemController::fromLABtoXYZ(const std::vector<int>& labValues)
+{
+    qreal l = labValues[0], a = labValues[1], b = labValues[2];
+    auto f = [](qreal x)
+    {
+        if (x * x * x >= 0.008856)
+        {
+            return qPow(x, 1.0 / 3);
+        }
+        else
+        {
+            return 7.787 * x + 16.0 / 116;
+        }
+    };
+    qreal Xw = 95.047, Yw = 100, Zw = 108.883;
+    qreal x, y, z;
+    x = f(a / 500 + (l + 16) / 116) * Yw;
+    y = f((l + 16) / 116) * Xw;
+    z = f((l + 16) / 116 - b / 200) * Zw;
+    return {x, y, z};
 }
 void colorSystemController::OnChangeSystemValues(const std::vector<int>& newValues, int systemId)
 {

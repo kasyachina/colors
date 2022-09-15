@@ -16,7 +16,9 @@ public slots:
     void OnSystemSliderActivated(int systemId);
 private:
     std::vector<int> fromXYZtoRGB(const std::vector<qreal>& xyzValues);
+    std::vector<qreal> fromRGBtoXYZ(const std::vector<int>& rgbValues);
     std::vector<qreal> fromLABtoXYZ(const std::vector<int>& labValues);
+    std::vector<int> fromXYZtoLAB(const std::vector<qreal>& xyzValues);
     QColor mainColor;
     QWidget *colorDisplayWidget;
     QVBoxLayout *vLayout = nullptr;
