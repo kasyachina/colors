@@ -162,11 +162,18 @@ void colorSystemController::OnChangeSystemValues(const std::vector<int>& newValu
         newColor.setHsv(newValues[0], newValues[1], newValues[2]);
         break;
     case ColorSystem::XYZ:
-        //fromXYZtoRGB func
+    {
+        auto rgbValues = fromXYZtoRGB({(qreal)newValues[0], (qreal)newValues[1], (qreal)newValues[2]});
+        newColor.setRgb(rgbValues[0], rgbValues[1], rgbValues[2]);
         break;
+    }
     case ColorSystem::LAB:
-        //fromLABtoXYZ func + fromXYZtoRGB func
+    {
+        auto xyzValues = fromLABtoXYZ(newValues);
+        auto rgbValues = fromXYZtoRGB(xyzValues);
+        newColor.setRgb(rgbValues[0], rgbValues[1], rgbValues[2]);
         break;
+    }
     }
     for (int i = 0; i < 3; i++)
     {
@@ -198,11 +205,26 @@ void colorSystemController::OnChangeSystemValues(const std::vector<int>& newValu
                 currentSystem -> ChangeFieldValue(newColor.value(), 2);
                 break;
             case ColorSystem::XYZ:
-                //fromRGBtoXYZ func
+            {
+                auto rgbValues = {newColor.red(), newColor.green(), newColor.blue()};
+                auto xyzValues = fromRGBtoXYZ(rgbValues);
+                currentSystem -> ChangeFieldValue((int)xyzValues[0], 0);
+                currentSystem -> ChangeFieldValue((int)xyzValues[1], 1);
+                currentSystem -> ChangeFieldValue((int)xyzValues[2], 2);
+                //fromRGBtoXyz func
                 break;
+            }
             case ColorSystem::LAB:
+            {
+                auto rgbValues = {newColor.red(), newColor.green(), newColor.blue()};
+                auto xyzValues = fromRGBtoXYZ(rgbValues);
+                auto labValues = fromXYZtoLAB(xyzValues);
+                currentSystem -> ChangeFieldValue((int)labValues[0], 0);
+                currentSystem -> ChangeFieldValue((int)labValues[1], 1);
+                currentSystem -> ChangeFieldValue((int)labValues[2], 2);
                 //fromRGBtoXYZ func + fromXYZtoLAB func
                 break;
+            }
             }
             currentSystem->BlockAllSignals(false);
         }
