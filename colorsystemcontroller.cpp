@@ -13,7 +13,6 @@ colorSystemController::colorSystemController(QWidget *parent, const std::vector<
         systems[i] = nullptr;
     }
     ChangeSystems(data);
-    OnChangeSystemValues({0, 0, 0}, 0);
 }
 void colorSystemController::ChangeSystems(const std::vector<ColorSystem>& data)
 {
@@ -52,6 +51,7 @@ void colorSystemController::ChangeSystems(const std::vector<ColorSystem>& data)
         connect(systems[i], &colorSystem::systemValueChanged, this, &colorSystemController::OnChangeSystemValues);
         connect(systems[i], &colorSystem::systemSliderActivated, this, &colorSystemController::OnSystemSliderActivated);
     }
+    OnChangeSystemValues({255, 255, 255}, -1);
 }
 QColor colorSystemController::getMainColor() const
 {
@@ -147,33 +147,40 @@ std::vector<int> colorSystemController::fromXYZtoLAB(const std::vector<qreal>& x
 void colorSystemController::OnChangeSystemValues(const std::vector<int>& newValues, int systemId)
 {
     QColor newColor;
-    switch (systems[systemId]->getSystemType())
+    if (systemId != -1)
     {
-    case ColorSystem::RGB:
+        switch (systems[systemId]->getSystemType())
+        {
+        case ColorSystem::RGB:
+            newColor.setRgb(newValues[0], newValues[1], newValues[2]);
+            break;
+        case ColorSystem::CMYK:
+            newColor.setCmyk(newValues[0], newValues[1], newValues[2], newValues[3]);
+            break;
+        case ColorSystem::HLS:
+            newColor.setHsl(newValues[0], newValues[1], newValues[2]);
+            break;
+        case ColorSystem::HSV:
+            newColor.setHsv(newValues[0], newValues[1], newValues[2]);
+            break;
+        case ColorSystem::XYZ:
+        {
+            auto rgbValues = fromXYZtoRGB({(qreal)newValues[0], (qreal)newValues[1], (qreal)newValues[2]});
+            newColor.setRgb(rgbValues[0], rgbValues[1], rgbValues[2]);
+            break;
+        }
+        case ColorSystem::LAB:
+        {
+            auto xyzValues = fromLABtoXYZ(newValues);
+            auto rgbValues = fromXYZtoRGB(xyzValues);
+            newColor.setRgb(rgbValues[0], rgbValues[1], rgbValues[2]);
+            break;
+        }
+        }
+    }
+    else
+    {
         newColor.setRgb(newValues[0], newValues[1], newValues[2]);
-        break;
-    case ColorSystem::CMYK:
-        newColor.setCmyk(newValues[0], newValues[1], newValues[2], newValues[3]);
-        break;
-    case ColorSystem::HLS:
-        newColor.setHsl(newValues[0], newValues[1], newValues[2]);
-        break;
-    case ColorSystem::HSV:
-        newColor.setHsv(newValues[0], newValues[1], newValues[2]);
-        break;
-    case ColorSystem::XYZ:
-    {
-        auto rgbValues = fromXYZtoRGB({(qreal)newValues[0], (qreal)newValues[1], (qreal)newValues[2]});
-        newColor.setRgb(rgbValues[0], rgbValues[1], rgbValues[2]);
-        break;
-    }
-    case ColorSystem::LAB:
-    {
-        auto xyzValues = fromLABtoXYZ(newValues);
-        auto rgbValues = fromXYZtoRGB(xyzValues);
-        newColor.setRgb(rgbValues[0], rgbValues[1], rgbValues[2]);
-        break;
-    }
     }
     for (int i = 0; i < 3; i++)
     {

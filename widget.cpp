@@ -12,6 +12,7 @@ Widget::Widget(QWidget *parent)
 
     ui -> colorShowcase -> setAutoFillBackground(true);
 
+
     QHBoxLayout *h = new QHBoxLayout(this);
     QVBoxLayout *vr = new QVBoxLayout;
 
@@ -39,6 +40,7 @@ void Widget::on_chooseColorButton_clicked()
     if (color.isValid())
     {
         controller -> setMainColor(color);
+        controller -> OnChangeSystemValues({color.red(), color.green(), color.blue()}, -1);
     }
 }
 

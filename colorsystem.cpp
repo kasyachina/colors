@@ -85,13 +85,13 @@ ColorSystem CMYKSystem::getSystemType() const
 {
     return ColorSystem::CMYK;
 }
-HSVSystem::HSVSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 360}, {0, 100}, {0, 100}}, "HSV", id)
+HSVSystem::HSVSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 360}, {0, 255}, {0, 255}}, "HSV", id)
 {}
 ColorSystem HSVSystem::getSystemType() const
 {
     return ColorSystem::HSV;
 }
-HLSSystem::HLSSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 360}, {0, 100}, {0, 100}}, "HLS", id)
+HLSSystem::HLSSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 360}, {0, 255}, {0, 255}}, "HLS", id)
 {}
 ColorSystem HLSSystem::getSystemType() const
 {
