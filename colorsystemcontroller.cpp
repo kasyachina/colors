@@ -67,12 +67,68 @@ void colorSystemController::OnSystemSliderActivated(int systemId)
         }
     }
 }
+std::vector<qreal> colorSystemController::fromRGBtoXYZ(const std::vector<int> &rgbValues)
+{
+    qreal R = rgbValues[0], G = rgbValues[1], B = rgbValues[2];
+    auto F = [](qreal x)
+    {
+      if (x > 0.04045)
+      {
+          return qPow((x + 0.055) / 1.055, 2.4);
+      }
+      else return x / 12.92;
+    };
+    qreal Rn = F(R / 255) * 100, Gn = F(G / 255) * 100, Bn = F(B / 255) * 100;
+    qreal X, Y, Z;
+    X = 0.412453 * Rn + 0.357580 * Gn + 0.180423 * Bn;
+    Y = 0.212671 * Rn + 0.715160 * Gn + 0.072169 * Bn;
+    Z = 0.019334 * Rn + 0.119193 * Gn + 0.950227 * Bn;
+    return {X, Y, Z};
+}
+std::vector<int> colorSystemController::fromXYZtoRGB(const std::vector<qreal> &xyzValues)
+{
+    qreal X = xyzValues[0] / 100, Y = xyzValues[1] / 100, Z = xyzValues[2] / 100;
+    auto F = [](qreal x)
+    {
+      if (x > 0.0031308)
+      {
+          return qPow(x, 1 / 2.4) * 1.055 - 0.055;
+      }
+      else return x * 12.92;
+    };
+    qreal Rn = 3.2406 * X - 1.5372 * Y - 0.4986 * Z;
+    qreal Gn = -0.9689 * X + 1.8758 * Y + 0.0415 * Z;
+    qreal Bn = 0.0557 * X - 0.2040 * Y + 1.0570 * Z;
+    qreal R = F(Rn) * 255, G = F(Gn) * 255, B = F(Bn) * 255;
+    return {(int)R, (int)G, (int)B};
+}
 std::vector<qreal> colorSystemController::fromLABtoXYZ(const std::vector<int>& labValues)
 {
-    qreal l = labValues[0], a = labValues[1], b = labValues[2];
-    auto f = [](qreal x)
+    qreal L = labValues[0], A = labValues[1], B = labValues[2];
+    auto F = [](qreal x)
     {
         if (x * x * x >= 0.008856)
+        {
+            return x * x * x;
+        }
+        else
+        {
+            return (x - 16.0 / 116) / 7.787;
+        }
+    };
+    qreal Xw = 95.047, Yw = 100, Zw = 108.883;
+    qreal X, Y, Z;
+    X = F(A / 500 + (L + 16) / 116) * Yw;
+    Y = F((L + 16) / 116) * Xw;
+    Z = F((L + 16) / 116 - B / 200) * Zw;
+    return {X, Y, Z};
+}
+std::vector<int> colorSystemController::fromXYZtoLAB(const std::vector<qreal>& xyzValues)
+{
+    qreal X = xyzValues[0], Y = xyzValues[1], Z = xyzValues[2];
+    auto F = [](qreal x)
+    {
+        if (qPow(x, 1.0 / 3) >= 0.008856)
         {
             return qPow(x, 1.0 / 3);
         }
@@ -82,11 +138,11 @@ std::vector<qreal> colorSystemController::fromLABtoXYZ(const std::vector<int>& l
         }
     };
     qreal Xw = 95.047, Yw = 100, Zw = 108.883;
-    qreal x, y, z;
-    x = f(a / 500 + (l + 16) / 116) * Yw;
-    y = f((l + 16) / 116) * Xw;
-    z = f((l + 16) / 116 - b / 200) * Zw;
-    return {x, y, z};
+    qreal L, A, B;
+    L = 116 * F(Y / Yw) - 16;
+    A = 500 * (F(X / Xw) - F(Y / Yw));
+    B = 200 * (F(Y / Yw) - F(Z / Zw));
+    return {(int)L, (int)A, (int)B};
 }
 void colorSystemController::OnChangeSystemValues(const std::vector<int>& newValues, int systemId)
 {
