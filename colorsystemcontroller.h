@@ -1,12 +1,13 @@
 #pragma once
 #include "colorsystem.h"
 #include <QBoxLayout>
+#include <QStatusBar>
 
 class colorSystemController : public QWidget
 {
     Q_OBJECT
 public:
-    colorSystemController(QWidget *parent, const std::vector<ColorSystem>& data, QWidget *displayWidget);
+    colorSystemController(QWidget *parent, const std::vector<ColorSystem>& data, QWidget *displayWidget, QStatusBar *_statusBar);
     QColor getMainColor() const;
     void setMainColor(const QColor& newColor);
     void updateMainColor();
@@ -23,6 +24,7 @@ private:
     std::vector<qreal> fromXYZtoLAB(const std::vector<qreal>& xyzValues) const;
     std::vector<qreal> mainXYZvalues;
     QWidget *colorDisplayWidget;
+    QStatusBar *statusBar;
     QVBoxLayout *vLayout = nullptr;
     colorSystem *systems[3];
     QPalette *selectedColorPalette;

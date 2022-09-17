@@ -15,8 +15,8 @@ Widget::Widget(QWidget *parent)
     QHBoxLayout *h = new QHBoxLayout;
     QVBoxLayout *vr = new QVBoxLayout;
 
-    controller = new colorSystemController(this, {ColorSystem::RGB, ColorSystem::LAB, ColorSystem::CMYK}, ui -> colorShowcase);
-    normalSize = QSize(570, 270);
+    controller = new colorSystemController(this, {ColorSystem::RGB, ColorSystem::LAB, ColorSystem::CMYK}, ui -> colorShowcase, ui -> statusbar);
+    normalSize = QSize(740, 270);
     ui -> selectModel -> setCurrentIndex(0);
     vr -> addWidget(ui -> selectModel);
     vr -> addWidget(ui -> colorShowcase);

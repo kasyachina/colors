@@ -7,7 +7,7 @@ colorSystemField::colorSystemField(QWidget *parent, colorSystemSlider *control_s
     slider -> setVisible(false);
     connect(this, &QLineEdit::returnPressed, this, &colorSystemField::EnterPressed);
     connect(this, &QLineEdit::textChanged, this, &colorSystemField::ChangeValueText);
-    QString warningMessage = "This field must be in range [" + QString::number(leftThreshold) + "," + QString::number(rightThreshold) + "]";
+    QString warningMessage = "This field must be in range [" + QString::number(leftThreshold) + "," + QString::number(rightThreshold) + "] with max two digits after comma";
     connect(this, &QLineEdit::inputRejected, this, [this, warningMessage](){QMessageBox::warning(this, "Error", warningMessage);});
     QDoubleValidator *val = new QDoubleValidator(leftThreshold, rightThreshold, 2, this);
     setValidator(val);
@@ -27,7 +27,7 @@ void colorSystemField::ChangeValue(qreal newValue)
     value = newValue;
     blockSignals(true);
     QString s = QString::number((int)(value * 100) / 100.0);
-    setText(s.replace('.', ','));//rounding to 2 signs after comma
+    setText(s.replace('.', ','));
     if (slider -> GetActiveField() == this)
     {
         slider -> setValue((int)(value * 100));
@@ -40,6 +40,14 @@ void colorSystemField::ChangeValueText(const QString& newValue)
     double parsedDouble = newValue.toDouble(&ok);
     if (ok)
     {
+        if (parsedDouble > rightThreshold)
+        {
+            parsedDouble = rightThreshold;
+        }
+        if (parsedDouble < leftThreshold)
+        {
+            parsedDouble = leftThreshold;
+        }
         ChangeValue(parsedDouble);
         emit valueChanged(value, fieldId);
     }

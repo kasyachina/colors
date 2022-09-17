@@ -2,8 +2,8 @@
 #include <QDebug>
 #include <QtMath>
 
-colorSystemController::colorSystemController(QWidget *parent, const std::vector<ColorSystem>& data, QWidget *displayWidget):
-    QWidget(parent), colorDisplayWidget(displayWidget)
+colorSystemController::colorSystemController(QWidget *parent, const std::vector<ColorSystem>& data, QWidget *displayWidget, QStatusBar *_statusBar):
+    QWidget(parent), colorDisplayWidget(displayWidget), statusBar(_statusBar)
 {
     selectedColorPalette = new QPalette;
     setMainColor(Qt::white);
@@ -106,19 +106,22 @@ std::vector<qreal> colorSystemController::fromXYZtoRGB(const std::vector<qreal> 
     qreal Gn = -0.9689 * X + 1.8758 * Y + 0.0415 * Z;
     qreal Bn = 0.0557 * X - 0.2040 * Y + 1.0570 * Z;
     qreal R = F(Rn), G = F(Gn), B = F(Bn);
-    auto N = [](qreal &x)
+    qreal eps = 10e-4;
+    auto N = [this, eps](qreal &x, const QString& component)
     {
-        if (x > 1)
+        if (x - 1 > eps)
         {
+            statusBar -> showMessage(component + " component of this RGB color represantation is out of displayable range. Maximal value is used instead", 4000);
             return 1.0;
         }
-        if (x < 0)
+        if (x < -eps)
         {
+            statusBar -> showMessage(component + " component of this RGB color representation is out of displayable range. Minimal value is used instead", 4000);
             return 0.0;
         }
         return x;
     };
-    return {N(R), N(G), N(B)};
+    return {N(R, "Red"), N(G, "Green"), N(B, "Blue")};
 }
 std::vector<qreal> colorSystemController::fromLABtoXYZ(const std::vector<qreal>& labValues) const
 {
@@ -202,11 +205,9 @@ void colorSystemController::ChangeSystemValues(const std::vector<qreal> &newXYZv
     case ColorSystem::LAB:
     {
         auto labValues = fromXYZtoLAB(newXYZvalues);
-        qDebug() << "XYZ " << newXYZvalues;
         currentSystem -> ChangeFieldValue(labValues[0], 0);
         currentSystem -> ChangeFieldValue(labValues[1], 1);
         currentSystem -> ChangeFieldValue(labValues[2], 2);
-        //fromXYZtoLAB func
         break;
     }
     }
