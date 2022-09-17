@@ -1,14 +1,13 @@
 #pragma once
 
-#include <QWidget>
+#include <QMainWindow>
 #include "colorsystemcontroller.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
 
-class Widget : public QWidget
-{
+class Widget : public QMainWindow{
     Q_OBJECT
 
 public:

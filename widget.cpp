@@ -5,14 +5,14 @@
 #include <QDebug>
 
 Widget::Widget(QWidget *parent)
-    : QWidget(parent)
+    : QMainWindow(parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
 
     ui -> colorShowcase -> setAutoFillBackground(true);
 
-    QHBoxLayout *h = new QHBoxLayout(this);
+    QHBoxLayout *h = new QHBoxLayout;
     QVBoxLayout *vr = new QVBoxLayout;
 
     controller = new colorSystemController(this, {ColorSystem::RGB, ColorSystem::LAB, ColorSystem::CMYK}, ui -> colorShowcase);
@@ -23,6 +23,7 @@ Widget::Widget(QWidget *parent)
     vr -> addWidget(ui -> chooseColorButton);
     h -> addWidget(controller);
     h -> addLayout(vr);
+    centralWidget() -> setLayout(h);
     setWindowTitle("Color systems");
     resize(normalSize);
 }
