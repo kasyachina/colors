@@ -224,15 +224,15 @@ void colorSystemController::OnChangeSystemValues(const std::vector<qreal>& newVa
             newXYZvalues = fromRGBtoXYZ({newColor.redF(), newColor.greenF(), newColor.blueF()});
             break;
         case ColorSystem::CMYK:
-            newColor.setCmyk(newValues[0] / 255, newValues[1] / 255, newValues[2] / 255, newValues[3] / 255);
+            newColor.setCmykF(newValues[0] / 255, newValues[1] / 255, newValues[2] / 255, newValues[3] / 255);
             newXYZvalues = fromRGBtoXYZ({newColor.redF(), newColor.greenF(), newColor.blueF()});
             break;
         case ColorSystem::HSL:
-            newColor.setHsl(newValues[0] / 360, newValues[1] / 255, newValues[2] / 255);
+            newColor.setHslF(newValues[0] / 360, newValues[1] / 255, newValues[2] / 255);
             newXYZvalues = fromRGBtoXYZ({newColor.redF(), newColor.greenF(), newColor.blueF()});
             break;
         case ColorSystem::HSV:
-            newColor.setHsv(newValues[0] / 360, newValues[1] / 255, newValues[2] / 255);
+            newColor.setHsvF(newValues[0] / 360, newValues[1] / 255, newValues[2] / 255);
             newXYZvalues = fromRGBtoXYZ({newColor.redF(), newColor.greenF(), newColor.blueF()});
             break;
         case ColorSystem::XYZ:
