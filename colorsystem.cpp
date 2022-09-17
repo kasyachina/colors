@@ -4,13 +4,17 @@
 colorSystem::colorSystem(QWidget *parent, int numberOfFields, std::vector<std::pair<qreal, qreal>> ranges, QString name, int _id) :
     QWidget(parent), size(numberOfFields), systemId(_id)
 {
-    blockSignals(true);
     slider = new colorSystemSlider(this);
     QHBoxLayout *h = new QHBoxLayout;
     for (int i = 0; i < size; i++)
     {
+        fields[i] = nullptr;
+    }
+    for (int i = 0; i < size; i++)
+    {
         fields[i] = new colorSystemField(this, slider, ranges[i].first, ranges[i].second, i);
-        connect(fields[i], &colorSystemField::valueChanged, this, &colorSystem::ChangeFieldValue);
+        ChangeFieldValue(0, i);
+        connect(fields[i], &colorSystemField::valueChanged, this, &colorSystem::OnChangeFieldValue);
         connect(fields[i], &colorSystemField::sliderActivated, this, &colorSystem::SliderActivated);
         if (i > 0)
         {
@@ -24,7 +28,6 @@ colorSystem::colorSystem(QWidget *parent, int numberOfFields, std::vector<std::p
     v -> addWidget(nameLabel);
     v -> addLayout(h);
     v -> addWidget(slider);
-    blockSignals(false);
 }
 void colorSystem::SliderActivated()
 {
@@ -32,36 +35,26 @@ void colorSystem::SliderActivated()
 }
 void colorSystem::DisableSlider()
 {
-    if (slider -> isVisible() && slider -> GetActiveField())
+    if (slider -> isVisible())
     {
-        disconnect(slider, &QSlider::sliderReleased, slider -> GetActiveField(), &colorSystemField::setActive);
-        disconnect(slider, &QSlider::valueChanged, slider -> GetActiveField(), &colorSystemField::ChangeValue);
+        slider -> ClearActiveField();
         slider -> setVisible(false);
     }
 }
-void colorSystem::BlockAllSignals(bool block)
-{
-    blockSignals(block);
-    for (int i = 0; i < size; i++)
-    {
-        fields[i]->blockSignals(block);
-    }
-}
-void colorSystem::ChangeFieldValue(int newValue, int fieldId)
+void colorSystem::ChangeFieldValue(qreal newValue, int fieldId)
 {
     values[fieldId] = newValue;
-    if (fields[fieldId]->getValue() != newValue)
-    {
-        fields[fieldId]->ChangeValue(newValue);
-    }
-    //qDebug() << '{' << systemId << '}';
-    std::vector<int> newValues;
+    fields[fieldId]->ChangeValue(newValue);
+}
+void colorSystem::OnChangeFieldValue(qreal newValue, int fieldId)
+{
+    ChangeFieldValue(newValue, fieldId);
+    std::vector<qreal> newValues;
     for (int i = 0; i < size; i++)
     {
         newValues.push_back(values[i]);
-        //qDebug() << '[' << values[i];
     }
-    //qDebug() << ']';
+    //qDebug() << systemId << newValues;
     emit systemValueChanged(newValues, systemId);
 }
 colorSystem::~colorSystem()
@@ -97,7 +90,7 @@ ColorSystem HSLSystem::getSystemType() const
 {
     return ColorSystem::HSL;
 }
-XYZSystem::XYZSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 95}, {0, 100}, {0, 109}}, "XYZ", id)
+XYZSystem::XYZSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 95.05}, {0, 100}, {0, 108.88}}, "XYZ", id)
 {}
 ColorSystem XYZSystem::getSystemType() const
 {

@@ -25,21 +25,23 @@ class colorSystemField : public QLineEdit
 {
     Q_OBJECT
 public:
-    explicit colorSystemField(QWidget *parent = nullptr, colorSystemSlider *control_slider = nullptr, int _left = 0, int _right = 100, int _id = 0);
-    int getValue() const;
+    explicit colorSystemField(QWidget *parent = nullptr, colorSystemSlider *control_slider = nullptr, qreal _left = 0, qreal _right = 100, qreal _id = 0);
+    qreal getValue() const;
+    void ChangeValue(qreal newValue);
     void setActive();
     virtual ~colorSystemField(){}
 public slots:
     void EnterPressed();
-    void ChangeValue(int newValue);
     void ChangeValueText(const QString& newValue);
+    void ChangeValueFromSlider(int newValue);
+
 signals:
-    void valueChanged(int newValue, int fieldId);
+    void valueChanged(qreal newValue, int fieldId);
     void sliderActivated();
 private:
     int fieldId;
-    int leftThreshold, rightThreshold;
-    int value;
+    qreal leftThreshold, rightThreshold;
+    qreal value;
     colorSystemSlider *slider;
     void mousePressEvent(QMouseEvent *) override;
 };

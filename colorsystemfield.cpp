@@ -1,89 +1,86 @@
 #include "colorsystemfield.h"
 #include "QDebug"
 
-colorSystemField::colorSystemField(QWidget *parent, colorSystemSlider *control_slider, int _left, int _right, int _id) :
+colorSystemField::colorSystemField(QWidget *parent, colorSystemSlider *control_slider, qreal _left, qreal _right, qreal _id) :
     QLineEdit(parent), fieldId(_id), leftThreshold(_left), rightThreshold(_right), slider(control_slider)
 {
-    blockSignals(true);
     slider -> setVisible(false);
     connect(this, &QLineEdit::returnPressed, this, &colorSystemField::EnterPressed);
     connect(this, &QLineEdit::textChanged, this, &colorSystemField::ChangeValueText);
-    QString warningMessage = "This field must be integer in range [" + QString::number(leftThreshold) + "," + QString::number(rightThreshold) + "]";
+    QString warningMessage = "This field must be in range [" + QString::number(leftThreshold) + "," + QString::number(rightThreshold) + "]";
     connect(this, &QLineEdit::inputRejected, this, [this, warningMessage](){QMessageBox::warning(this, "Error", warningMessage);});
-    QIntValidator *val = new QIntValidator(leftThreshold, rightThreshold, this);
+    QDoubleValidator *val = new QDoubleValidator(leftThreshold, rightThreshold, 2, this);
     setValidator(val);
-    blockSignals(false);
+    ChangeValue(0);
 }
 void colorSystemField::EnterPressed()
 {
     slider -> setVisible(false);
     clearFocus();
 }
-int colorSystemField::getValue() const
+qreal colorSystemField::getValue() const
 {
     return value;
 }
-void colorSystemField::ChangeValue(int newValue)
+void colorSystemField::ChangeValue(qreal newValue)
 {
     //qDebug() << '[' << newValue << fieldId << ']';
-    if (newValue > rightThreshold)
-    {
-        newValue = rightThreshold;
-    }
-    if (newValue < leftThreshold)
-    {
-        newValue = leftThreshold;
-    }
     value = newValue;
-    if (text() != QString::number(value))
+    blockSignals(true);
+    QString s = QString::number((int)(value * 100) / 100.0);
+    setText(s.replace('.', ','));//rounding to 2 signs after comma
+    if (slider -> GetActiveField() == this)
     {
-        setText(QString::number(value));
+        slider -> setValue((int)(value * 100));
     }
-    if (slider -> GetActiveField() == this && slider -> value() != value)
-    {
-        slider -> setValue(value);
-    }
-    emit valueChanged(newValue, fieldId);
+    blockSignals(false);
 }
 void colorSystemField::ChangeValueText(const QString& newValue)
 {
     bool ok;
-    int parsedInt = newValue.toInt(&ok);
+    double parsedDouble = newValue.toDouble(&ok);
     if (ok)
     {
-        ChangeValue(parsedInt);
+        ChangeValue(parsedDouble);
+        emit valueChanged(value, fieldId);
     }
+}
+void colorSystemField::ChangeValueFromSlider(int newValue)
+{
+    ChangeValue(newValue / 100.0);
+    emit valueChanged(value, fieldId);
 }
 void colorSystemField::mousePressEvent(QMouseEvent *)
 {
     if (slider -> GetActiveField())
     {
-        disconnect(slider, &QSlider::sliderReleased, this, &colorSystemField::setActive);
-        disconnect(slider, &QSlider::valueChanged, slider -> GetActiveField(), &colorSystemField::ChangeValue);
+        slider -> ClearActiveField();
     }
     slider -> ChangeActiveField(this);
     slider -> setVisible(true);
-    slider -> setRange(leftThreshold, rightThreshold);
+    slider -> setRange((int)(leftThreshold * 100), (int)(rightThreshold * 100));
     ChangeValue(value);
     connect(slider, &QSlider::sliderReleased, this, &colorSystemField::setActive);
-    connect(slider, &QSlider::valueChanged, this, &colorSystemField::ChangeValue);
+    connect(slider, &QSlider::valueChanged, this, &colorSystemField::ChangeValueFromSlider);
     emit sliderActivated();
-}
-colorSystemSlider::colorSystemSlider(QWidget *parent) : QSlider(Qt::Horizontal, parent)
-{
-    setTracking(true);
 }
 void colorSystemField::setActive()
 {
     setFocus();
 }
-void colorSystemSlider::ClearActiveField()
+colorSystemSlider::colorSystemSlider(QWidget *parent) : QSlider(Qt::Horizontal, parent)
 {
-    activeField = nullptr;
+    setTracking(true);
 }
 colorSystemField* colorSystemSlider::GetActiveField() const
 {
     return activeField;
+}
+void colorSystemSlider::ClearActiveField()
+{
+    disconnect(this, &QSlider::sliderReleased, GetActiveField(), &colorSystemField::setActive);
+    disconnect(this, &QSlider::valueChanged, GetActiveField(), &colorSystemField::ChangeValueFromSlider);
+    activeField = nullptr;
 }
 void colorSystemSlider::ChangeActiveField(colorSystemField *new_field)
 {

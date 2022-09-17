@@ -23,21 +23,21 @@ class colorSystem : public QWidget
     Q_OBJECT
 public:
     explicit colorSystem(QWidget *parent = nullptr, int number_of_fields = 3, std::vector<std::pair<qreal, qreal>> ranges = {}, QString name = "Sample color system", int id = 0);
-    void BlockAllSignals(bool block);
+    void ChangeFieldValue(qreal newValue, int fieldId);
     void DisableSlider();
     virtual ColorSystem getSystemType() const = 0;
     virtual ~colorSystem();
 public slots:
-    void ChangeFieldValue(int newValue, int fieldId);
+    void OnChangeFieldValue(qreal newValue, int fieldId);
     void SliderActivated();
 signals:
-    void systemValueChanged(std::vector<int> new_values, int systemId);
+    void systemValueChanged(std::vector<qreal> new_values, int systemId);
     void systemSliderActivated(int systemId);
 
 private:
     colorSystemField *fields[4];
-    int values[4];
-    colorSystemField *activeBox;
+    qreal values[4];
+    //colorSystemField *activeBox;
     QLabel *nameLabel;
     int size;
     int systemId;
