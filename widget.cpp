@@ -39,7 +39,7 @@ void Widget::on_chooseColorButton_clicked()
     if (color.isValid())
     {
         controller -> setMainColor(color);
-        controller -> OnChangeSystemValues({color.redF() * 255, color.greenF() * 255, color.blueF() * 255}, -1);
+        controller -> OnChangeSystemValues({color.redF(), color.greenF(), color.blueF()}, -1);
     }
 }
 

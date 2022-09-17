@@ -268,6 +268,7 @@ void colorSystemController::setMainColor(const QColor &newColor)
     if (newColor.isValid())
     {
         selectedColorPalette -> setColor(QPalette::Window, newColor);
+        mainXYZvalues = fromRGBtoXYZ({newColor.redF(), newColor.greenF(), newColor.blueF()});
         colorDisplayWidget -> setPalette(*selectedColorPalette);
     }
 }
