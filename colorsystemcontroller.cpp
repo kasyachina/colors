@@ -12,6 +12,7 @@ colorSystemController::colorSystemController(QWidget *parent, const std::vector<
     {
         systems[i] = nullptr;
     }
+    mainXYZvalues = {95.047, 100, 108.883};
     ChangeSystems(data);
 }
 void colorSystemController::ChangeSystems(const std::vector<ColorSystem>& data)
@@ -52,11 +53,14 @@ void colorSystemController::ChangeSystems(const std::vector<ColorSystem>& data)
         connect(systems[i], &colorSystem::systemSliderActivated, this, &colorSystemController::OnSystemSliderActivated);
     }
     QColor color = getMainColor();
-    OnChangeSystemValues({color.redF() * 255, color.greenF() * 255, color.blueF() * 255}, -1);
+    OnChangeSystemValues({color.redF(), color.greenF(), color.blueF()}, -1);
 }
 QColor colorSystemController::getMainColor() const
 {
-    return mainColor;
+    auto mainRGBvalues = fromXYZtoRGB(mainXYZvalues);
+    QColor c;
+    c.setRgbF(mainRGBvalues[0], mainRGBvalues[1], mainRGBvalues[2]);
+    return c;
 }
 void colorSystemController::OnSystemSliderActivated(int systemId)
 {
@@ -68,7 +72,8 @@ void colorSystemController::OnSystemSliderActivated(int systemId)
         }
     }
 }
-std::vector<qreal> colorSystemController::fromRGBtoXYZ(const std::vector<qreal> &rgbValues)
+//accepts rgb values in range [0.1]
+std::vector<qreal> colorSystemController::fromRGBtoXYZ(const std::vector<qreal> &rgbValues) const
 {
     qreal R = rgbValues[0], G = rgbValues[1], B = rgbValues[2];
     auto F = [](qreal x)
@@ -86,7 +91,7 @@ std::vector<qreal> colorSystemController::fromRGBtoXYZ(const std::vector<qreal> 
     Z = 0.019334 * Rn + 0.119193 * Gn + 0.950227 * Bn;
     return {X, Y, Z};
 }
-std::vector<qreal> colorSystemController::fromXYZtoRGB(const std::vector<qreal> &xyzValues)
+std::vector<qreal> colorSystemController::fromXYZtoRGB(const std::vector<qreal> &xyzValues) const
 {
     qreal X = xyzValues[0] / 100, Y = xyzValues[1] / 100, Z = xyzValues[2] / 100;
     auto F = [](qreal x)
@@ -115,7 +120,7 @@ std::vector<qreal> colorSystemController::fromXYZtoRGB(const std::vector<qreal> 
     };
     return {N(R), N(G), N(B)};
 }
-std::vector<qreal> colorSystemController::fromLABtoXYZ(const std::vector<qreal>& labValues)
+std::vector<qreal> colorSystemController::fromLABtoXYZ(const std::vector<qreal>& labValues) const
 {
     qreal L = labValues[0], A = labValues[1], B = labValues[2];
     auto F = [](qreal x)
@@ -136,7 +141,7 @@ std::vector<qreal> colorSystemController::fromLABtoXYZ(const std::vector<qreal>&
     Z = F((L + 16) / 116.0 - B / 200.0) * Zw;
     return {X, Y, Z};
 }
-std::vector<qreal> colorSystemController::fromXYZtoLAB(const std::vector<qreal>& xyzValues)
+std::vector<qreal> colorSystemController::fromXYZtoLAB(const std::vector<qreal>& xyzValues) const
 {
     qreal X = xyzValues[0], Y = xyzValues[1], Z = xyzValues[2];
     auto F = [](qreal x)
@@ -158,10 +163,11 @@ std::vector<qreal> colorSystemController::fromXYZtoLAB(const std::vector<qreal>&
     //qDebug() << fromLABtoXYZ({L, A, B});
     return {L, A, B};
 }
-void colorSystemController::ChangeSystemValues(const std::vector<qreal> &newRGBValues, int systemId)
+void colorSystemController::ChangeSystemValues(const std::vector<qreal> &newXYZvalues, int systemId)
 {
+    auto newRGBValuesF = fromXYZtoRGB(newXYZvalues);
     QColor newColor;
-    newColor.setRgbF(newRGBValues[0] / 255, newRGBValues[1] / 255, newRGBValues[2] / 255);
+    newColor.setRgbF(newRGBValuesF[0], newRGBValuesF[1], newRGBValuesF[2]);
     colorSystem *currentSystem = systems[systemId];
     switch (currentSystem->getSystemType())
     {
@@ -188,23 +194,19 @@ void colorSystemController::ChangeSystemValues(const std::vector<qreal> &newRGBV
         break;
     case ColorSystem::XYZ:
     {
-        auto rgbValues = {newColor.redF(), newColor.greenF(), newColor.blueF()};
-        auto xyzValues = fromRGBtoXYZ(rgbValues);
-        currentSystem -> ChangeFieldValue(xyzValues[0], 0);
-        currentSystem -> ChangeFieldValue(xyzValues[1], 1);
-        currentSystem -> ChangeFieldValue(xyzValues[2], 2);
-        //fromRGBtoXyz func
+        currentSystem -> ChangeFieldValue(newXYZvalues[0], 0);
+        currentSystem -> ChangeFieldValue(newXYZvalues[1], 1);
+        currentSystem -> ChangeFieldValue(newXYZvalues[2], 2);
         break;
     }
     case ColorSystem::LAB:
     {
-        auto rgbValues = {newColor.redF(), newColor.greenF(), newColor.blueF()};
-        auto xyzValues = fromRGBtoXYZ(rgbValues);
-        auto labValues = fromXYZtoLAB(xyzValues);
+        auto labValues = fromXYZtoLAB(newXYZvalues);
+        qDebug() << "XYZ " << newXYZvalues;
         currentSystem -> ChangeFieldValue(labValues[0], 0);
         currentSystem -> ChangeFieldValue(labValues[1], 1);
         currentSystem -> ChangeFieldValue(labValues[2], 2);
-        //fromRGBtoXYZ func + fromXYZtoLAB func
+        //fromXYZtoLAB func
         break;
     }
     }
@@ -212,61 +214,61 @@ void colorSystemController::ChangeSystemValues(const std::vector<qreal> &newRGBV
 void colorSystemController::OnChangeSystemValues(const std::vector<qreal>& newValues, int systemId)
 {
     QColor newColor;
+    std::vector<qreal> newXYZvalues;
     if (systemId != -1)
     {
         switch (systems[systemId]->getSystemType())
         {
         case ColorSystem::RGB:
             newColor.setRgbF(newValues[0] / 255, newValues[1] / 255, newValues[2] / 255);
+            newXYZvalues = fromRGBtoXYZ({newColor.redF(), newColor.greenF(), newColor.blueF()});
             break;
         case ColorSystem::CMYK:
             newColor.setCmyk(newValues[0] / 255, newValues[1] / 255, newValues[2] / 255, newValues[3] / 255);
+            newXYZvalues = fromRGBtoXYZ({newColor.redF(), newColor.greenF(), newColor.blueF()});
             break;
         case ColorSystem::HSL:
             newColor.setHsl(newValues[0] / 360, newValues[1] / 255, newValues[2] / 255);
+            newXYZvalues = fromRGBtoXYZ({newColor.redF(), newColor.greenF(), newColor.blueF()});
             break;
         case ColorSystem::HSV:
             newColor.setHsv(newValues[0] / 360, newValues[1] / 255, newValues[2] / 255);
+            newXYZvalues = fromRGBtoXYZ({newColor.redF(), newColor.greenF(), newColor.blueF()});
             break;
         case ColorSystem::XYZ:
         {
-            auto rgbValues = fromXYZtoRGB({newValues[0], newValues[1], newValues[2]});
-            newColor.setRgbF(rgbValues[0], rgbValues[1], rgbValues[2]);
+            newXYZvalues = newValues;
             break;
         }
         case ColorSystem::LAB:
         {
-            auto xyzValues = fromLABtoXYZ({newValues[0], newValues[1], newValues[2]});
-            auto rgbValues = fromXYZtoRGB(xyzValues);
-            newColor.setRgbF(rgbValues[0], rgbValues[1], rgbValues[2]);
+            newXYZvalues = fromLABtoXYZ({newValues[0], newValues[1], newValues[2]});
             break;
         }
         }
     }
     else
     {
-        newColor.setRgbF(newValues[0] / 255, newValues[1] / 255, newValues[2] / 255);
+        newXYZvalues = fromRGBtoXYZ(newValues);
     }
     for (int i = 0; i < 3; i++)
     {
         if (i != systemId)
         {
-            ChangeSystemValues({newColor.redF() * 255, newColor.greenF() * 255, newColor.blueF() * 255}, i);
+            ChangeSystemValues(newXYZvalues, i);
         }
     }
+    mainXYZvalues = newXYZvalues;
+    auto rgbValues = fromXYZtoRGB(newXYZvalues);
+    newColor.setRgbF(rgbValues[0], rgbValues[1], rgbValues[2]);
     setMainColor(newColor);
 }
 void colorSystemController::setMainColor(const QColor &newColor)
 {
     if (newColor.isValid())
     {
-        mainColor = newColor;
-        selectedColorPalette -> setColor(QPalette::Window, mainColor);
+        selectedColorPalette -> setColor(QPalette::Window, newColor);
         colorDisplayWidget -> setPalette(*selectedColorPalette);
-    }
-    else
-    {
-        qDebug() << newColor.redF() * 255 << newColor.greenF() * 255 << newColor.blueF() * 255;
     }
 }
 colorSystemController::~colorSystemController()

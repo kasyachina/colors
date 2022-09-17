@@ -24,7 +24,6 @@ qreal colorSystemField::getValue() const
 }
 void colorSystemField::ChangeValue(qreal newValue)
 {
-    //qDebug() << '[' << newValue << fieldId << ']';
     value = newValue;
     blockSignals(true);
     QString s = QString::number((int)(value * 100) / 100.0);
@@ -59,7 +58,7 @@ void colorSystemField::mousePressEvent(QMouseEvent *)
     slider -> ChangeActiveField(this);
     slider -> setVisible(true);
     slider -> setRange((int)(leftThreshold * 100), (int)(rightThreshold * 100));
-    ChangeValue(value);
+    slider -> setValue(value * 100);
     connect(slider, &QSlider::sliderReleased, this, &colorSystemField::setActive);
     connect(slider, &QSlider::valueChanged, this, &colorSystemField::ChangeValueFromSlider);
     emit sliderActivated();
