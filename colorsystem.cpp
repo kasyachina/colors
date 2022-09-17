@@ -10,7 +10,6 @@ colorSystem::colorSystem(QWidget *parent, int numberOfFields, std::vector<std::p
     for (int i = 0; i < size; i++)
     {
         fields[i] = new colorSystemField(this, slider, ranges[i].first, ranges[i].second, i);
-        values[i] = ranges[i].first;
         connect(fields[i], &colorSystemField::valueChanged, this, &colorSystem::ChangeFieldValue);
         connect(fields[i], &colorSystemField::sliderActivated, this, &colorSystem::SliderActivated);
         if (i > 0)
@@ -55,6 +54,7 @@ void colorSystem::ChangeFieldValue(int newValue, int fieldId)
     {
         fields[fieldId]->ChangeValue(newValue);
     }
+    //qDebug() << '{' << systemId << '}';
     std::vector<int> newValues;
     for (int i = 0; i < size; i++)
     {
@@ -91,11 +91,11 @@ ColorSystem HSVSystem::getSystemType() const
 {
     return ColorSystem::HSV;
 }
-HLSSystem::HLSSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 360}, {0, 255}, {0, 255}}, "HLS", id)
+HSLSystem::HSLSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 360}, {0, 255}, {0, 255}}, "HSL", id)
 {}
-ColorSystem HLSSystem::getSystemType() const
+ColorSystem HSLSystem::getSystemType() const
 {
-    return ColorSystem::HLS;
+    return ColorSystem::HSL;
 }
 XYZSystem::XYZSystem(QWidget *parent, int id):colorSystem(parent, 3, {{0, 95}, {0, 100}, {0, 109}}, "XYZ", id)
 {}

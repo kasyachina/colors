@@ -37,7 +37,6 @@ signals:
     void valueChanged(int newValue, int fieldId);
     void sliderActivated();
 private:
-    bool IsSignalAllowed;
     int fieldId;
     int leftThreshold, rightThreshold;
     int value;

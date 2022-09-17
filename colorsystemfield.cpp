@@ -12,7 +12,6 @@ colorSystemField::colorSystemField(QWidget *parent, colorSystemSlider *control_s
     connect(this, &QLineEdit::inputRejected, this, [this, warningMessage](){QMessageBox::warning(this, "Error", warningMessage);});
     QIntValidator *val = new QIntValidator(leftThreshold, rightThreshold, this);
     setValidator(val);
-    ChangeValue(_left);
     blockSignals(false);
 }
 void colorSystemField::EnterPressed()
@@ -26,6 +25,7 @@ int colorSystemField::getValue() const
 }
 void colorSystemField::ChangeValue(int newValue)
 {
+    //qDebug() << '[' << newValue << fieldId << ']';
     if (newValue > rightThreshold)
     {
         newValue = rightThreshold;

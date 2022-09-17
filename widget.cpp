@@ -12,7 +12,6 @@ Widget::Widget(QWidget *parent)
 
     ui -> colorShowcase -> setAutoFillBackground(true);
 
-
     QHBoxLayout *h = new QHBoxLayout(this);
     QVBoxLayout *vr = new QVBoxLayout;
 
@@ -60,7 +59,7 @@ void Widget::on_selectModel_currentTextChanged(const QString &arg1)
         }
         if (x == "HLS")
         {
-            v.push_back(ColorSystem::HLS);
+            v.push_back(ColorSystem::HSL);
         }
         if (x == "HSV")
         {

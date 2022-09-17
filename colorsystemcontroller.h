@@ -15,10 +15,10 @@ public slots:
     void OnChangeSystemValues(const std::vector<int>& newValues, int systemId);
     void OnSystemSliderActivated(int systemId);
 private:
-    std::vector<int> fromXYZtoRGB(const std::vector<qreal>& xyzValues);
-    std::vector<qreal> fromRGBtoXYZ(const std::vector<int>& rgbValues);
-    std::vector<qreal> fromLABtoXYZ(const std::vector<int>& labValues);
-    std::vector<int> fromXYZtoLAB(const std::vector<qreal>& xyzValues);
+    std::vector<qreal> fromXYZtoRGB(const std::vector<qreal>& xyzValues);
+    std::vector<qreal> fromRGBtoXYZ(const std::vector<qreal>& rgbValues);
+    std::vector<qreal> fromLABtoXYZ(const std::vector<qreal>& labValues);
+    std::vector<qreal> fromXYZtoLAB(const std::vector<qreal>& xyzValues);
     QColor mainColor;
     QWidget *colorDisplayWidget;
     QVBoxLayout *vLayout = nullptr;
